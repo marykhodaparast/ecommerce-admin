@@ -2,7 +2,7 @@ import Layout from "/components/Layout";
 import useState from "react";
 
 export default function NewProduct() {
-    const [title, setTitle] = useState('');
+    // const [title, setTitle] = useState('');
   return (
     <Layout>
       <h1>New Product</h1>
