@@ -3,7 +3,7 @@ import Layout from "/components/Layout";
 
 export default function Home() {
   const { data: session } = useSession();
-  console.log({ session });
+  //console.log({ session });
   return (
     <Layout>
       <div className="text-blue-900 flex justify-between">
