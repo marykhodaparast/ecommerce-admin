@@ -7,6 +7,7 @@ export default function ProductForm({
   title: existingTitle,
   description: existingDescription,
   price: existingPrice,
+  images,
 }) {
   const [title, setTitle] = useState(existingTitle || "");
   const [description, setDescription] = useState(existingDescription || "");
@@ -38,6 +39,12 @@ export default function ProductForm({
         value={title}
         onChange={(ev) => setTitle(ev.target.value)}
       />
+      <label>Photos</label>
+      <div className="mb-2">
+        {!images?.length && (
+          <div>No photos in this product</div>
+        )}
+      </div>
       <label>Description</label>
       <textarea
         placeholder="description"
