@@ -1,15 +1,17 @@
-import multiparty from 'multiparty'
+import multiparty from "multiparty";
 
-export default async function handle(req, res) { 
-    const form = new multiparty.Form()
+export default async function handle(req, res) {
+  const form = new multiparty.Form();
+  const { fields, files } = await new Promise((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
-        if (err) throw err;
-        console.log('length:' + files.length);
-        console.log(fields);
-        res.json('ok');
+      if (err) reject(err);
+      resolve({ fields, files });
     });
+  });
+  console.dir(files ,{depth:5});
+  return res.json("ok");
 }
 
 export const config = {
-  api: {bodyParser: false}
+  api: { bodyParser: false },
 };
