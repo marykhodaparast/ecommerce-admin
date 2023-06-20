@@ -30,23 +30,37 @@ export default function ProductForm({
   if (goToProducts) {
     router.push("/products");
   }
+  function imagebase64(file) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    const data = new Promise((resolve, reject) => {
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (err) => reject(err);
+    });
+
+    return data;
+  }
 
   async function uploadImages(ev) {
     const files = ev.target?.files;
-  
+
     if (files?.length > 0) {
       const data = new FormData();
-      for (const file of files) {
-        data.append("file", file);
+      let file_arr = [];
+      for (let file of files) {
+        //data.append("file", file);
+        file = await imagebase64(file);
+        file_arr.push(file);
+        //console.log(file);
+        //setImages(file);
       }
-      console.log(data);
       //files.forEach(file => data.append('file', file));
-      const res = await axios.post('/api/upload', data)
-      //console.log(data);
+      // const res = await axios.post('/api/upload', data)
+      // //console.log(data);
       setImages((oldImages) => {
-        return [...oldImages];
+        return [...oldImages,...file_arr];
       });
-      //console.log(images);
+      console.log(images);
     }
   }
 
@@ -61,12 +75,12 @@ export default function ProductForm({
       />
       <label>Photos</label>
       <div className="mb-2">
-        {/* {!!images?.length &&
-          images.map((path) => (
+        {!!images?.length &&
+          images.map(path => (
             <>
-              <img src="{path}" width="100px" height="100px" alt="" />
+              <img src={path} width="100px" height="100px" alt="" />
             </>
-          ))} */}
+          ))}
         <label
           className="w-24 h-24 text-center flex flex-col cursor-pointer
         items-center justify-center text-sm gap-1 text-gray-500 rounded-lg
