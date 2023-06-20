@@ -50,17 +50,23 @@ export default function ProductForm({
       for (let file of files) {
         //data.append("file", file);
         file = await imagebase64(file);
+        data.append("file", file);
         file_arr.push(file);
-        //console.log(file);
-        //setImages(file);
       }
       //files.forEach(file => data.append('file', file));
-      // const res = await axios.post('/api/upload', data)
-      // //console.log(data);
+      const res = await axios
+        .post("/api/upload", data)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log('khar')
+          console.log(error.response);
+        });
+      console.log(res);
       setImages((oldImages) => {
         return [...oldImages,...file_arr];
       });
-      console.log(images);
     }
   }
 
@@ -74,12 +80,12 @@ export default function ProductForm({
         onChange={(ev) => setTitle(ev.target.value)}
       />
       <label>Photos</label>
-      <div className="mb-2">
+      <div className="mb-2 flex flex-wrap gap-2">
         {!!images?.length &&
           images.map(path => (
-            <>
-              <img src={path} width="100px" height="100px" alt="" />
-            </>
+            <div key={path} className="h-24">
+              <img src={path} className="rounded-lg" alt="" />
+            </div>
           ))}
         <label
           className="w-24 h-24 text-center flex flex-col cursor-pointer
