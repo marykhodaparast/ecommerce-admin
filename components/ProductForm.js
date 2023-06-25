@@ -48,22 +48,18 @@ export default function ProductForm({
       const data = new FormData();
       let file_arr = [];
       for (let file of files) {
-        //data.append("file", file);
         file = await imagebase64(file);
         data.append("file", file);
         file_arr.push(file);
       }
-      //files.forEach(file => data.append('file', file));
       const res = await axios
         .post("/api/upload", data)
         .then((response) => {
           console.log(response);
         })
         .catch((error) => {
-          console.log('khar')
           console.log(error.response);
         });
-      console.log(res);
       setImages((oldImages) => {
         return [...oldImages,...file_arr];
       });

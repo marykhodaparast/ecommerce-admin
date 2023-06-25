@@ -1,7 +1,6 @@
 import multiparty from "multiparty";
 
 export default async function handle(req, res) {
-  //const options = (formidable.Options = {});
   const form = new multiparty.Form();
   const { fields, files } = await new Promise((resolve, reject) => {
     form.parse(req, (err, fields, files) => {
@@ -10,14 +9,20 @@ export default async function handle(req, res) {
     });
   });
 
-  //console.dir(files ,{depth:5});
   return res.json("ok");
 }
 
 export const config = {
   api: {
-    bodyParser: {
-      sizeLimit: "10mb", // Set desired value here
-    }
+    bodyParser: false
   },
 };
+
+// export const config = {
+//   api: {
+//     bodyParser: {
+//       json: { limit: "50mb", extended: true },
+//       urlencoded: { limit: "50mb", extended: true },
+//     },
+//   },
+// };
