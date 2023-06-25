@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Spinner from "./Spinner";
 
 export default function ProductForm({
   _id,
@@ -14,6 +15,7 @@ export default function ProductForm({
   const [price, setPrice] = useState(existingPrice || "");
   const [images, setImages] = useState(existingImages || "");
   const [goToProducts, setGoToProducts] = useState(false);
+  const [isUploading, setIsUploding] = useState(false);
   const router = useRouter();
   async function saveProduct(ev) {
     ev.preventDefault();
@@ -45,6 +47,7 @@ export default function ProductForm({
     const files = ev.target?.files;
 
     if (files?.length > 0) {
+      setIsUploding(true);
       const data = new FormData();
       let file_arr = [];
       for (let file of files) {
@@ -63,6 +66,7 @@ export default function ProductForm({
       setImages((oldImages) => {
         return [...oldImages,...file_arr];
       });
+      setIsUploding(false);
     }
   }
 
@@ -76,13 +80,18 @@ export default function ProductForm({
         onChange={(ev) => setTitle(ev.target.value)}
       />
       <label>Photos</label>
-      <div className="mb-2 flex flex-wrap gap-2">
+      <div className="mb-2 flex flex-wrap gap-1">
         {!!images?.length &&
           images.map(path => (
             <div key={path} className="h-24">
               <img src={path} className="rounded-lg" alt="" />
             </div>
           ))}
+        {isUploading && (
+          <div className="h-24 flex items-center">
+            <Spinner/>
+          </div>
+        )}
         <label
           className="w-24 h-24 text-center flex flex-col cursor-pointer
         items-center justify-center text-sm gap-1 text-gray-500 rounded-lg
@@ -105,7 +114,6 @@ export default function ProductForm({
           <div>Upload</div>
           <input type="file" className="hidden" onChange={uploadImages} />
         </label>
-        {!images?.length && <div>No photos in this product</div>}
       </div>
       <label>Description</label>
       <textarea

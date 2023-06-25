@@ -14,9 +14,17 @@ export default async function handle(req, res) {
 
 export const config = {
   api: {
-    bodyParser: false
+    bodyParser: false,
   },
 };
+
+// export const config = {
+//   api: {
+//     bodyParser: {
+//       json: { limit: '10mb', extended: true }
+//     },
+//   },
+// };
 
 // export const config = {
 //   api: {
