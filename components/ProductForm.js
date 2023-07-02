@@ -71,8 +71,9 @@ export default function ProductForm({
       setIsUploding(false);
     }
   }
-  function updateImagesOrder() {
-    console.log(arguments)
+  function updateImagesOrder(images) {
+    //console.log(images)
+    setImages(images);
   }
 
   return (
