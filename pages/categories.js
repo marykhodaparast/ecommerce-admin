@@ -1,29 +1,66 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "/components/Layout";
+import { withSwal } from "react-sweetalert2";
 
-export default function Categories() {
-  const [name, setName] = useState('');
-  const [parentCategory, setParentCategory] = useState('');
+function Categories({ swal }) {
+  const [editedCategory, setEditedCategory] = useState(null);
+  const [name, setName] = useState("");
+  const [parentCategory, setParentCategory] = useState("");
   const [categories, setCategories] = useState([]);
   useEffect(() => {
     fetchCategories();
   }, []);
   function fetchCategories() {
-    axios.get('/api/categories').then(result => {
+    axios.get("/api/categories").then((result) => {
       setCategories(result.data);
     });
   }
+  //TODO: test CRUD in categories again
   async function saveCategory(ev) {
     ev.preventDefault();
-    await axios.post('/api/categories', {name, parentCategory});
-    setName('');
+    const data = { name, parentCategory };
+    if (editedCategory) {
+      data._id = editedCategory._id;
+      await axios.put("/api/categories", data);
+      setEditedCategory(null);
+    } else {
+      await axios.post("/api/categories", data);
+    }
+
+    setName("");
     fetchCategories();
+  }
+  function editCategory(category) {
+    setEditedCategory(category);
+    setName(category.name);
+    setParentCategory(category.parent?._id);
+  }
+  function deleteCategory(category) {
+    swal.fire({
+      title: "Are you sure?",
+      text: `Do you want to delete ${category.name}?`,
+      showCancelButton: true,
+      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Yes, Delete!',
+      confirmButtonColor: '#d55',
+      reverseButtons: true,
+    }).then(async result => {
+      if (result.isConfirmed) {
+        const {_id} = category;
+        await axios.delete('/api/categories?_id='+ _id);
+        fetchCategories();
+      }
+    });
   }
   return (
     <Layout>
       <h1>Categories</h1>
-      <label>New category name</label>
+      <label>
+        {editedCategory
+          ? `Edit category ${editedCategory.name}`
+          : "Create new category"}
+      </label>
       <form onSubmit={saveCategory} className="flex gap-1">
         <input
           className="mb-0"
@@ -34,8 +71,9 @@ export default function Categories() {
         />
         <select
           className="mb-0"
-          onChange={ev => setParentCategory(ev.target.value)}
-          value={parentCategory}>
+          onChange={(ev) => setParentCategory(ev.target.value)}
+          value={parentCategory}
+        >
           <option value="">No parent category</option>
           {categories.length > 0 &&
             categories.map((category) => (
@@ -53,6 +91,7 @@ export default function Categories() {
           <tr>
             <td>Category name</td>
             <td>Parent Category</td>
+            <td></td>
           </tr>
         </thead>
         <tbody>
@@ -61,7 +100,21 @@ export default function Categories() {
               <>
                 <tr>
                   <td>{category.name}</td>
-                  <td>{category.parent}</td>
+                  <td>{category?.parent?.name}</td>
+                  <td>
+                    <button
+                      onClick={() => editCategory(category)}
+                      className="btn-primary mr-1"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteCategory(category)}
+                      className="btn-primary"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               </>
             ))}
@@ -70,3 +123,4 @@ export default function Categories() {
     </Layout>
   );
 }
+export default withSwal(({ swal }, ref) => <Categories swal={swal} />);
